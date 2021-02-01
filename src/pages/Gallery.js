@@ -34,6 +34,7 @@ class Gallery extends React.Component{
             selectedItem: null,
             keyword: "",
             filterBuku: [],
+            user: ""
         }
 
         this.state.filterBuku = this.state.buku
@@ -132,10 +133,81 @@ class Gallery extends React.Component{
         }
     }
 
+    setUser = () => {
+        // cek eksistensi dari session storage
+        if(sessionStorage.getItem("user") === null){
+            // kondisi jika session storage "user" belum dibuat
+            let prompt = window.prompt("Masukkan Nama Anda","")
+            if(prompt === null || prompt === ""){
+                // jika user tidak mengisikan namanya
+                this.setUser()
+            }else{
+                // jika user telah mengisikan namanya
+
+                // simpan nama user ke session storage
+                sessionStorage.setItem("user", prompt)
+
+                // simpan nama user ke state.user
+                this.setState({user: prompt})
+            }
+        }else{
+            // kondisi saat session storage "user" telah dibuat
+
+            // akses nilai dari session storage "user"
+            let name = sessionStorage.getItem("user")
+            this.setState({user: name})
+        }
+    }
+
+    addToCart = (selectedItem) => {
+        // membuat sebuah variabel untuk menampung cart sementara
+        let tempCart = []
+
+        // cek eksistensi dari data cart pada localStorage
+        if(localStorage.getItem("cart") !== null){
+            tempCart = JSON.parse(localStorage.getItem("cart"))
+            // JSON.parse() digunakan untuk mengonversi dari string -> array object
+        }
+
+
+        // cek data yang dipilih user ke keranjang belanja
+        let existItem = tempCart.find(item => item.isbn === selectedItem.isbn)
+
+        if(existItem){
+            // jika item yang dipilih ada pada keranjang belanja
+            window.alert("Anda telah memilih item ini")
+        }else{
+            // user diminta memasukkan jumlah item yang dibeli
+            let promptJumlah = window.prompt("Masukkan jumlah item yang beli","")
+            if(promptJumlah !== null && promptJumlah !== ""){
+                // jika user memasukkan jumlah item yg dibeli
+
+                // menambahkan properti "jumlahBeli" pada item yang dipilih
+                selectedItem.jumlahBeli = promptJumlah
+                
+                // masukkan item yg dipilih ke dalam cart
+                tempCart.push(selectedItem)
+
+                // simpan array tempCart ke localStorage
+                localStorage.setItem("cart", JSON.stringify(tempCart))
+            }
+        }
+    }
+
+    
+
+    componentDidMount(){
+        // fungsi yang dijalankan setelah fungsi render dieksekusi
+        this.setUser()
+    }
+
     
     render(){
         return(
             <div className="container">
+                <h4 className="text-info my-2">
+                    Nama Pengguna: { this.state.user }
+                </h4>
                 <input type="text" className="form-control my-2" placeholder="Pencarian"
                 value={this.state.keyword}
                 onChange={ev => this.setState({keyword: ev.target.value})}
@@ -151,6 +223,7 @@ class Gallery extends React.Component{
                         cover={item.cover}
                         onEdit={ () => this.Edit(item)}
                         onDrop={ () => this.Drop(item)}
+                        onCart={ () => this.addToCart(item)}
                          />
                     )) }
                 </div>

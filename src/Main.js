@@ -4,6 +4,7 @@ import Home from "./pages/Home"
 import About from "./pages/About"
 import Contact from "./pages/Contact"
 import Gallery from "./pages/Gallery"
+import Cart from "./pages/Cart"
 
 class Main extends React.Component{
     render(){
@@ -13,6 +14,7 @@ class Main extends React.Component{
                 <Route path="/about" component={About} />
                 <Route path="/contact" component={Contact} />
                 <Route path="/gallery" component={Gallery} />
+                <Route path="/cart" component={Cart} />
             </Switch>
         )
     }
